@@ -30,6 +30,12 @@ packets = [
         pdst="192.0.2.2",
         op=2,
     ),
+    Ether(
+        src="02:00:00:00:00:02",
+        dst="02:00:00:00:00:01",
+    )
+    / IP(src="192.0.2.2", dst="192.0.2.1")
+    / TCP(sport=80, dport=50000, flags="SA"),
 ]
 
 for index, packet in enumerate(packets):
