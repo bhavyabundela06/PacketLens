@@ -36,7 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_packets_dst_ip
 
 CREATE INDEX IF NOT EXISTS idx_packets_dst_port
     ON packets(dst_port);
-    
+
 CREATE TABLE IF NOT EXISTS flows (
     flow_id INTEGER PRIMARY KEY,
     protocol TEXT NOT NULL,
@@ -54,4 +54,14 @@ CREATE TABLE IF NOT EXISTS flows (
     byte_count INTEGER NOT NULL,
 
     UNIQUE (protocol, a_ip, a_port, b_ip, b_port)
+);
+
+CREATE TABLE IF NOT EXISTS hosts (
+    ip TEXT PRIMARY KEY NOT NULL,
+    pkts_sent INTEGER NOT NULL,
+    pkts_recv INTEGER NOT NULL,
+    bytes_sent INTEGER NOT NULL,
+    bytes_recv INTEGER NOT NULL,
+    first_seen REAL NOT NULL,
+    last_seen REAL NOT NULL
 );
