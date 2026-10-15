@@ -48,7 +48,10 @@ def parse_packet(packet) -> dict:
     elif ARP in packet:
         record["protocol"] = "ARP"
 
-    if TCP in packet:
+    if record["ip_version"] == 6 and packet[IPv6].nh == 58:
+        record["protocol"] = "ICMPv6"
+
+    elif TCP in packet:
         transport = packet[TCP]
         record["protocol"] = "TCP"
         record["src_port"] = int(transport.sport)
