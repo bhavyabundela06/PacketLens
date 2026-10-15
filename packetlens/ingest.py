@@ -3,8 +3,8 @@ from pathlib import Path
 
 from packetlens.database import create_database, insert_packets
 from packetlens.parser import read_packets
-
-
+from packetlens.flows import rebuild_flows
+from packetlens.hosts import rebuild_hosts
 def main():
     parser = argparse.ArgumentParser(
         description="Import a PCAP capture into a new SQLite database."
@@ -23,8 +23,12 @@ def main():
 
     create_database(args.database)
     count = insert_packets(args.database, read_packets(args.capture))
-    print(f"Imported {count} packets into {args.database}")
+    flow_count = rebuild_flows(args.database)
+    host_count = rebuild_hosts(args.database)
 
+    print(f"Imported {count} packets into {args.database}")
+    print(f"Created {flow_count} flows")
+    print(f"Created {host_count} host summaries")
 
 if __name__ == "__main__":
     main()
