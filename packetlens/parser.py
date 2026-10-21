@@ -1,9 +1,35 @@
 from scapy.layers.l2 import ARP, Ether
 from scapy.layers.inet import IP, TCP, UDP, ICMP
-from scapy.layers.inet6 import IPv6
+from scapy.layers.inet6 import (
+    IPv6,
+    IPv6ExtHdrHopByHop,
+    IPv6ExtHdrRouting,
+    IPv6ExtHdrDestOpt,
+    IPv6ExtHdrFragment,
+)
 from scapy.utils import PcapReader
 
+def ipv6_next_header(ipv6_packet):
+    """Follow common extension headers and return the next protocol number."""
+    extension_headers = (
+        IPv6ExtHdrHopByHop,
+        IPv6ExtHdrRouting,
+        IPv6ExtHdrDestOpt,
+        IPv6ExtHdrFragment,
+    )
 
+    next_header = ipv6_packet.nh
+    layer = ipv6_packet.payload
+
+    while isinstance(layer, extension_headers):
+        if isinstance(layer, IPv6ExtHdrFragment) and layer.offset != 0:
+            # Later fragments don't start with the transport header.
+            return None
+
+        next_header = layer.nh
+        layer = layer.payload
+
+    return next_header
 def parse_packet(packet) -> dict:
     """Convert one captured packet into a database-ready dictionary."""
     record = {
@@ -48,7 +74,10 @@ def parse_packet(packet) -> dict:
     elif ARP in packet:
         record["protocol"] = "ARP"
 
-    if record["ip_version"] == 6 and packet[IPv6].nh == 58:
+    if (
+        record["ip_version"] == 6
+        and ipv6_next_header(packet[IPv6]) == 58
+    ):
         record["protocol"] = "ICMPv6"
 
     elif TCP in packet:
