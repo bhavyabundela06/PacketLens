@@ -8,3 +8,5 @@ __pycache__/
 .env
 data/output/*
 .vscode/
+data/samples/*
+!data/samples/demo.pcap
