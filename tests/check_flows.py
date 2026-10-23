@@ -1,15 +1,17 @@
 import sqlite3
+import tempfile
 from pathlib import Path
 
 from packetlens.flows import rebuild_flows
+from packetlens.ingest import ingest_capture
 
-
-db_path = (
-    Path(__file__).resolve().parent.parent
-    / "data/output/flows_test.db"
+# Self-contained: import the committed demo capture into a temporary database.
+_temporary = tempfile.TemporaryDirectory()
+db_path = Path(_temporary.name) / "demo.db"
+ingest_capture(
+    Path(__file__).resolve().parent.parent / "data/samples/demo.pcap", db_path
 )
 
-assert db_path.is_file(), "Import the sample capture first."
 
 # Repeating the rebuild must not duplicate the summaries.
 assert rebuild_flows(db_path) == 2

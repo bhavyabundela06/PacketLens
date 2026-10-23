@@ -6,10 +6,14 @@ from pathlib import Path
 from packetlens.xml_export import export_xml
 
 
-project_root = Path(__file__).resolve().parent.parent
-db_path = project_root / "data/output/demo_with_hosts.db"
+from packetlens.ingest import ingest_capture
 
-assert db_path.is_file(), "Create the sample database first."
+project_root = Path(__file__).resolve().parent.parent
+
+# Self-contained: import the committed demo capture into a temporary database.
+_temporary = tempfile.TemporaryDirectory()
+db_path = Path(_temporary.name) / "demo.db"
+ingest_capture(project_root / "data/samples/demo.pcap", db_path)
 
 connection = sqlite3.connect(db_path.as_uri() + "?mode=ro", uri=True)
 connection.row_factory = sqlite3.Row
@@ -19,17 +23,18 @@ try:
         output = Path(temporary_directory) / "export.xml"
 
         counts = export_xml(db_path, output)
-        assert counts == {"packets": 5, "flows": 2, "hosts": 2}
+        assert counts == {"packets": 5, "flows": 2, "hosts": 2, "alerts": 0}
 
         # Reading it back also verifies that the XML is well formed.
         root = ET.parse(output).getroot()
         assert root.tag == "packetlens"
-        assert root.get("schema_version") == "1"
+        assert root.get("schema_version") == "2"
 
         sections = (
             ("packets", "packet", "id"),
             ("flows", "flow", "flow_id"),
             ("hosts", "host", "ip"),
+            ("alerts", "alert", "alert_id"),
         )
 
         for table, item_name, order_column in sections:
@@ -45,7 +50,7 @@ try:
             assert section.get("count") == str(len(rows))
 
             for row, item in zip(rows, items):
-                assert [field.tag for field in item] == list(row.keys())
+                assert [f.tag for f in item if f.tag != "evidence"] == list(row.keys())
 
                 for column in row.keys():
                     field = item.find(column)

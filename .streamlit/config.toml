@@ -1,0 +1,50 @@
+# PacketLens dashboard look and behaviour. Streamlit reads this file when
+# you run `streamlit run packetlens/dashboard.py` from the project folder.
+
+[server]
+# Only this computer can open the dashboard.
+address = "localhost"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+# Hide the developer menu items ("Deploy", etc.).
+toolbarMode = "minimal"
+
+[theme]
+# Inter if it is installed, otherwise the computer's own interface font
+# (SF Pro on a Mac, Segoe UI on Windows). Nothing is downloaded, so the
+# dashboard works fully offline.
+font = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif"
+codeFont = "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace"
+baseRadius = "7px"
+buttonRadius = "7px"
+showWidgetBorder = false
+chartCategoricalColors = ["#4F5BD5", "#2BB3A3", "#A7AAB3", "#D4D6DB", "#C3C8F2", "#6C6F78"]
+dataframeHeaderBackgroundColor = "transparent"
+
+# Controls (buttons, checkboxes, tabs, sliders, focus rings) are monochrome.
+# Colour is kept for meaning only: red = suspicious, amber = burst, and one
+# quiet indigo inside charts.
+[theme.light]
+primaryColor = "#17181C"
+backgroundColor = "#FAFAF8"
+secondaryBackgroundColor = "#EEEEEA"
+textColor = "#17181C"
+borderColor = "#E7E6E1"
+linkColor = "#17181C"
+
+[theme.light.sidebar]
+backgroundColor = "#F3F3F0"
+
+[theme.dark]
+primaryColor = "#ECECEE"
+backgroundColor = "#111215"
+secondaryBackgroundColor = "#1F2125"
+textColor = "#ECECEE"
+borderColor = "#25272C"
+linkColor = "#ECECEE"
+
+[theme.dark.sidebar]
+backgroundColor = "#16171B"

@@ -7,3 +7,6 @@ __pycache__/
 .pytest_cache/
 .env
 data/output/*
+.vscode/
+data/samples/*
+!data/samples/demo.pcap

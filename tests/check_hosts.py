@@ -1,15 +1,17 @@
 import sqlite3
+import tempfile
 from pathlib import Path
 
 from packetlens.hosts import rebuild_hosts
+from packetlens.ingest import ingest_capture
 
-
-db_path = (
-    Path(__file__).resolve().parent.parent
-    / "data/output/demo_with_hosts.db"
+# Self-contained: import the committed demo capture into a temporary database.
+_temporary = tempfile.TemporaryDirectory()
+db_path = Path(_temporary.name) / "demo.db"
+ingest_capture(
+    Path(__file__).resolve().parent.parent / "data/samples/demo.pcap", db_path
 )
 
-assert db_path.is_file(), "Run ingestion for demo_with_hosts.db first."
 
 assert rebuild_hosts(db_path) == 2
 assert rebuild_hosts(db_path) == 2
